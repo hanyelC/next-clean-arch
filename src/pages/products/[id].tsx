@@ -1,3 +1,4 @@
+import { useCart } from '@/context/cart.provider'
 import { http } from '@/utils/http'
 import { Product } from '@/utils/models'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
@@ -8,6 +9,8 @@ type ProductDetailPageProps = {
 }
 
 const ProductDetailPage: NextPage<ProductDetailPageProps> = ({ product }) => {
+  const { addProduct } = useCart()
+
   const { isFallback } = useRouter()
   
   if (isFallback) return <p>Loading...</p>
@@ -16,7 +19,9 @@ const ProductDetailPage: NextPage<ProductDetailPageProps> = ({ product }) => {
     <div>
       <h3>{product.name}</h3>
       <label>Preço</label> {product.price}
-      <button>Adicionar no carrinho</button>
+      <button onClick={() => addProduct(product)}>
+        Adicionar no carrinho
+      </button>
     </div>
   )
 }
