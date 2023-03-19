@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     "target": "es5",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -15,6 +17,7 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
+      "@core/*": ["./src/@core/*"],
       "@/*": ["./src/*"]
     }
   },

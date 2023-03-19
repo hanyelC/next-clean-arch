@@ -1,13 +1,12 @@
-import { http } from '@/utils/http'
-import { Product } from '@/utils/models'
 import { GetServerSideProps, NextPage } from 'next'
-import { Inter } from 'next/font/google'
 import Link from 'next/link'
 
-const inter = Inter({ subsets: ['latin'] })
+import { ListProductsUseCase } from '@core/application/product/list-products.use-case'
+import { ProductProps } from '@core/domain/entities/product'
+import { container, Registry } from '@core/infra/container-registry'
 
 type HomeProps = {
-  products: Product[]
+  products: ProductProps[]
 }
 
 const Home: NextPage<HomeProps> = ({ products }) => {
@@ -29,11 +28,14 @@ const Home: NextPage<HomeProps> = ({ products }) => {
 export default Home
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const { data: products } = await http.get('/products')
-  
+  const useCase = container.get<ListProductsUseCase>(
+    Registry.ListProductsUseCase
+  )
+  const products = await useCase.execute()
+
   return {
     props: {
-      products
+      products: products.map((product) => product.toJSON())
     }
   }
 }

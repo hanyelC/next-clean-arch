@@ -2,11 +2,11 @@ import { useCart } from '@/context/cart.provider'
 import React from 'react'
 
 const MyCart = () => {
-  const { products, total } = useCart()
+  const { cart } = useCart()
   
   return (
     <nav>
-      Cart - Total {total} | items {products.length}
+      Cart - Total {cart.total} | items {cart.products.length}
     </nav>
   )
 }

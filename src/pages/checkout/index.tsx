@@ -1,11 +1,13 @@
-import { useCart } from '@/context/cart.provider'
-import { http } from '@/utils/http'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { FormEvent } from 'react'
 
+import { useCart } from '@/context/cart.provider'
+import { ProcessOrderUseCase } from '@core/application/order/process-order.use-case'
+import { container, Registry } from '@core/infra/container-registry'
+
 const CheckoutPage: NextPage = () => {
-  const { products } = useCart()
+  const cartContext = useCart()
   
   const router = useRouter()
 
@@ -14,11 +16,17 @@ const CheckoutPage: NextPage = () => {
 
     const creditCardNumber = event.currentTarget.credit_card_number.value
 
-    const { data: order } = await http.post('/orders', {
-      products,
-      credit_card_number: creditCardNumber
+    const processOrderUseCase = container.get<ProcessOrderUseCase>(
+      Registry.ProcessOrderUseCase
+    )
+
+    const order = await processOrderUseCase.execute({
+      credit_card_number: creditCardNumber,
+      products: cartContext.cart.products,
     })
 
+    cartContext.reload()
+    
     router.push(`/checkout/${order.id}/success`)
   }
 
@@ -26,8 +34,8 @@ const CheckoutPage: NextPage = () => {
     <div>
       <h3>Meu carrinho</h3>
       <ul>
-        {products.map(product => (
-          <li key={product.id}>
+        {cartContext.cart.products.map((product, key) => (
+          <li key={key}>
             Product {product.name} - {product.price}
           </li>
         ))}
